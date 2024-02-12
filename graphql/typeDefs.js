@@ -4,17 +4,9 @@ module.exports = gql`
     ## Main Models
     type User {
         id: ID!
+        username: String!
         firstName: String!
         lastName: String!
-        username: String!
-        email: String!
-        location: String!
-        experience: String!
-        gender: String!
-        weight: Int!
-        height: Int!
-        age: Int!
-        bikes: [Bike]
     }
 
     type Ride {
@@ -54,6 +46,7 @@ module.exports = gql`
     type Query {
         getUser: String!
         getRide: String!
+        getUsers: [User]
     }
 
     ## Mutation List

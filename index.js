@@ -1,6 +1,7 @@
 const { ApolloServer } = require("@apollo/server");
 const { startStandaloneServer } = require("@apollo/server/standalone");
 const { mergeResolvers } = require("@graphql-tools/merge");
+const mongoose = require("mongoose");
 require("dotenv").config();
 
 const typeDefs = require("./graphql/typeDefs.js");
@@ -26,4 +27,12 @@ async function startApolloServer() {
     `);
 }
 
-startApolloServer();
+mongoose
+  .connect(process.env.MONGODB, {})
+  .then(() => {
+    console.log("\nSUCCESS: CONNECTED TO DATABASE");
+    startApolloServer();
+  })
+  .catch((err) => {
+    console.error(err);
+  });
