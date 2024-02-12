@@ -1,5 +1,7 @@
 module.exports = {
     Query: {
-        sayHi:() => "Hello World!"
-    }
+        async getUser() {
+            return "Got This User";
+        },
+    },
 };

@@ -1,5 +1,7 @@
 module.exports = {
     Query: {
-        sayYo:() => "Yo World!"
-    }
+        async getRide() {
+            return "Got This Ride";
+        },
+    },
 };

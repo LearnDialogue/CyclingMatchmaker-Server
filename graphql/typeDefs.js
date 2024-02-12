@@ -27,9 +27,9 @@ module.exports = gql`
         model: String!
         weight: Int!
     }
-    
-    type Query{
-        sayHi: String!
-        sayYo: String!
+
+    type Query {
+        getUser: String!
+        getRide: String!
     }
 `
