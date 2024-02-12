@@ -5,6 +5,7 @@ require("dotenv").config();
 
 const typeDefs = require("./graphql/typeDefs.js");
 
+// Import Resolvers
 const usersResolver = require("./graphql/resolvers/users.js");
 const ridesResolver = require("./graphql/resolvers/rides.js");
 const resolvers = mergeResolvers([usersResolver, ridesResolver]);
