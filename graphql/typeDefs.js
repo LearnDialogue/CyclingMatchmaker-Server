@@ -113,6 +113,7 @@ module.exports = gql`
     type Query {
         getUser(username: String!): User!
         getUsers: [User]!
+        getEvent(eventID: String!): Event!
     }
 
     ## MUTATION LIST

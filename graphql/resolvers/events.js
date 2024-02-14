@@ -4,9 +4,10 @@ const Event = require("../../models/Event.js");
 module.exports = {
 
     Query: {
-        // async getEvent() {
-
-        // },
+        async getEvent(_, { eventID }) {
+            const event = await Event.findOne({ _id: eventID });
+            return event;
+        },
     },
 
     Mutation: {
