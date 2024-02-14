@@ -1,39 +1,87 @@
 const gql = require('graphql-tag');
 module.exports = gql`
 
-    ## Main Models
+    ##  MAIN MODELS
+
+    ## User Model
     type User {
         id: ID!
         username: String!
+        email: String!
+        password: String!
         firstName: String!
         lastName: String!
-    }
-
-    type Ride {
-        id: ID!
+        sex: String!
+        birthday: String!
+        weight: Int!
+        metric: Boolean!
+        FPT: Float
+        FPTdate: String
+        equipment: [Gear]
+        stravaAPIToken: String
+        stravaRefreshToken: String
+        events: [Event]
         createdAt: String!
-        setDate: String!
-        location: String!
+        lastLogin: String!
+        emailAuthenticated: String
     }
 
-    type Bike {
+    ## User/Gear Aux Model
+    type Gear {
+        id: ID!
+        type: String!
         make: String!
         model: String!
         weight: Int!
+        distance: Float!
     }
 
-    ## Input Models
+    ## Event Model
+    type Event {
+        id: ID!
+        host: String!
+        name: String!
+        startTime: String!
+        distance: Float!
+        description: String
+        route: Route!
+    }
+
+    ## Event/Route Aux Model
+    type Route {
+        id: ID!
+        points: [[Number]]!
+        elevation: [Number]!
+        grade: [Number]!
+        terrain: [Number]!
+        distance: Number!
+        maxElevation: Number!
+        minElevation: Number!
+        totalElevationGain: Number!
+        startCoordinates: [Number]!
+        endCoordinates: [Number]!
+    }
+
+    # type Ride {
+    #     id: ID!
+    #     createdAt: String!
+    #     setDate: String!
+    #     location: String!
+    # }
+
+
+
+    ## INPUT MODELS
     input RegisterInput {
-        firstName: String!
-        lastName: String!
         username: String!
         email: String!
-        location: String!
-        experience: String!
-        gender: String!
+        password: String!
+        firstName: String!
+        lastName: String!
+        sex: String!
+        birthday: String!
         weight: Int!
-        height: Int!
-        age: Int!
+        metric: Boolean!
     }
 
     input LoginInput {
@@ -42,16 +90,27 @@ module.exports = gql`
         remember: String!
     }
 
-    ## Query List
+    input AddGearInput {
+        username: String!
+        type: String!
+        make: String!
+        model: String!
+        weight: Int!
+        distance: Float!
+    }
+
+    ## QUERY LIST
     type Query {
         getUser: String!
         getRide: String!
         getUsers: [User]
     }
 
-    ## Mutation List
+    ## MUTATION LIST
     type Mutation {
         register(registerInput: RegisterInput): User!
         login(loginInput: LoginInput): User!
+        addGear(addGearInput: AddGearInput): [Gear]!
+        removeGear(username: String!, gearID: String!): [Gear]!
     }
 `
