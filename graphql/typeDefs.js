@@ -50,16 +50,16 @@ module.exports = gql`
     ## Event/Route Aux Model
     type Route {
         id: ID!
-        points: [[Number]]!
-        elevation: [Number]!
-        grade: [Number]!
-        terrain: [Number]!
-        distance: Number!
-        maxElevation: Number!
-        minElevation: Number!
-        totalElevationGain: Number!
-        startCoordinates: [Number]!
-        endCoordinates: [Number]!
+        points: [[Float]]!
+        elevation: [Float]!
+        grade: [Float]!
+        terrain: [String]!
+        distance: Float!
+        maxElevation: Float!
+        minElevation: Float!
+        totalElevationGain: Float!
+        startCoordinates: [Float]!
+        endCoordinates: [Float]!
     }
 
     # type Ride {
