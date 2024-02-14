@@ -1,4 +1,5 @@
 const gql = require('graphql-tag');
+
 module.exports = gql`
 
     ##  MAIN MODELS
@@ -15,8 +16,8 @@ module.exports = gql`
         birthday: String!
         weight: Int!
         metric: Boolean!
-        FPT: Float
-        FPTdate: String
+        FTP: Float
+        FTPdate: String
         equipment: [Gear]
         stravaAPIToken: String
         stravaRefreshToken: String
@@ -42,7 +43,6 @@ module.exports = gql`
         host: String!
         name: String!
         startTime: String!
-        distance: Float!
         description: String
         route: Route!
     }
@@ -61,15 +61,6 @@ module.exports = gql`
         startCoordinates: [Float]!
         endCoordinates: [Float]!
     }
-
-    # type Ride {
-    #     id: ID!
-    #     createdAt: String!
-    #     setDate: String!
-    #     location: String!
-    # }
-
-
 
     ## INPUT MODELS
     input RegisterInput {
@@ -99,11 +90,30 @@ module.exports = gql`
         distance: Float!
     }
 
+    input CreateEventInput {
+        # Event Input
+        host: String!
+        name: String!
+        startTime: String!
+        description: String
+
+        # Route Input
+        points: [[Float]]!
+        elevation: [Float]!
+        grade: [Float]!
+        terrain: [String]!
+        distance: Float!
+        maxElevation: Float!
+        minElevation: Float!
+        totalElevationGain: Float!
+        startCoordinates: [Float]!
+        endCoordinates: [Float]!
+    }
+
     ## QUERY LIST
     type Query {
-        getUser: String!
-        getRide: String!
-        getUsers: [User]
+        getUser(username: String!): User!
+        getUsers: [User]!
     }
 
     ## MUTATION LIST
@@ -112,5 +122,6 @@ module.exports = gql`
         login(loginInput: LoginInput): User!
         addGear(addGearInput: AddGearInput): [Gear]!
         removeGear(username: String!, gearID: String!): [Gear]!
+        createEvent(createEventInput: CreateEventInput!): Event!
     }
 `

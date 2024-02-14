@@ -104,12 +104,6 @@ const userSchema = new Schema({
             distance: Number,
         }
     ],
-    // rides: [
-    //     {
-    //         type: Schema.Types.ObjectId,
-    //         ref: 'rides',
-    //     }
-    // ]
 });
 
 module.exports = model('User', userSchema);

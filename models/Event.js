@@ -1,21 +1,10 @@
 const { model, Schema } = require("mongoose");
-
-// Auxilary coordinate schema
-const coordinateSchema = new Schema({
-    lat: {
-        type: Number,
-        required: true
-    },
-    long: {
-        type: Number,
-        required: true
-    },
-});
+const userSchema = require('./User')
 
 // Auxilary route schema
 const routeSchema = new Schema({
     points: {
-        type: [coordinateSchema],
+        type: [[Number]],
         default: [],
         required: true,
     },
@@ -51,19 +40,19 @@ const routeSchema = new Schema({
         required: true,
     },
     startCoordinates: {
-        type: coordinateSchema,
+        type: [Number],
         required: true,
     },
     endCoordinates: {
-        type: coordinateSchema,
+        type: [Number],
         required: true,
-    }
+    },
 });
 
 const eventSchema = new Schema({
     host: {
-        type: Schema.Types.ObjectId,
-        ref: 'users'
+        type: userSchema,
+        required: true,
     },
     name: {
         type: String,
@@ -73,17 +62,13 @@ const eventSchema = new Schema({
         type: String,
         required: true,
     },
-    distance: {
-        type: Number,
-        required: true,
-    },
     description: {
         type: String,
     },
-   route: {
+    route: {
         type: routeSchema,
         required: true,
-   }
+    },
 });
 
-module.exports = model('User', userSchema);
+module.exports = model('Event', eventSchema);

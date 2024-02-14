@@ -2,34 +2,17 @@ const User = require("../../models/User.js");
 
 module.exports = {
     Query: {
-        async getUser() {
-            // Logic to return user info
-            return "Got This User";
+        async getUser(_, { username }) {
+            const user = await User.findOne({ username });
+            return user;
         },
 
         async getUsers() {
-            try {
-                const users = await User.find();
-                return users;
-            } catch (err) {
-                throw new Error(err);
-            }
+            const users = await User.find();
+            return users;
         },
     },
 
-
-    // username: String!
-    // email: String!
-    // password: String!
-    // firstName: String!
-    // lastName: String!
-    // sex: String!
-    // birthday: String!
-    // weight: Int!
-    // metric: Boolean!
-    // createdAt: String!
-    // lastLogin: String!
-    // emailAuthenticated: String!
     Mutation: {
         async register(_, {
             registerInput: {
@@ -65,17 +48,6 @@ module.exports = {
                 gear: [],
                 events: [],
             });
-
-            // const newGear = {
-            //     type: "lol",
-            //     make: "lol",
-            //     model: "lol",
-            //     weight: 123,
-            //     distance: 1.2
-            // };
-
-            // newUser.equipment.push(newGear);
-
             const res = await newUser.save();
 
             return {
