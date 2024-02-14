@@ -111,17 +111,23 @@ module.exports = gql`
 
     ## QUERY LIST
     type Query {
+        # Users
         getUser(username: String!): User!
         getUsers: [User]!
+        # Events
         getEvent(eventID: String!): Event!
+        getEvents: [Event]!
     }
 
     ## MUTATION LIST
     type Mutation {
+        # Users
         register(registerInput: RegisterInput): User!
         login(loginInput: LoginInput): User!
         addGear(addGearInput: AddGearInput): [Gear]!
         removeGear(username: String!, gearID: String!): [Gear]!
+        # Events
         createEvent(createEventInput: CreateEventInput!): Event!
+        deleteEvent(host: String!, eventID: String!): [Event]!
     }
 `

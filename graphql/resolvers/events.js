@@ -8,6 +8,11 @@ module.exports = {
             const event = await Event.findOne({ _id: eventID });
             return event;
         },
+
+        async getEvents() {
+            const events = await Event.find();
+            return events;
+        },
     },
 
     Mutation: {
@@ -59,5 +64,18 @@ module.exports = {
             );
             return res;
         },
+
+        async deleteEvent(_, {
+            host,
+            eventID
+        }) {
+            const res = await User.findOneAndUpdate(
+                { username: host },
+                { $pull: { events: { _id: eventID }}},
+                { returnDocument: 'after'},
+            );
+            await Event.deleteOne({ _id: eventID });
+            return res.events;
+        }
     },
 };
