@@ -8,8 +8,8 @@ const typeDefs = require("./graphql/typeDefs.js");
 
 // Import Resolvers
 const usersResolver = require("./graphql/resolvers/users.js");
-const ridesResolver = require("./graphql/resolvers/rides.js");
-const resolvers = mergeResolvers([usersResolver, ridesResolver]);
+const eventsResolver = require("./graphql/resolvers/events.js");
+const resolvers = mergeResolvers([usersResolver, eventsResolver]);
 
 const server = new ApolloServer({
     typeDefs,

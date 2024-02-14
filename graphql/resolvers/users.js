@@ -26,8 +26,7 @@ module.exports = {
                 weight,
                 metric,
             },
-            }
-        ) {
+        }) {
             firstName = firstName.trim();
             lastName = lastName.trim();
             email = email.toLowerCase();

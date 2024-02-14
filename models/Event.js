@@ -1,5 +1,4 @@
 const { model, Schema } = require("mongoose");
-const userSchema = require('./User')
 
 // Auxilary route schema
 const routeSchema = new Schema({
@@ -47,11 +46,11 @@ const routeSchema = new Schema({
         type: [Number],
         required: true,
     },
-});
+}, { _id: false });
 
 const eventSchema = new Schema({
     host: {
-        type: userSchema,
+        type: String,
         required: true,
     },
     name: {

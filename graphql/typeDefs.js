@@ -49,7 +49,6 @@ module.exports = gql`
 
     ## Event/Route Aux Model
     type Route {
-        id: ID!
         points: [[Float]]!
         elevation: [Float]!
         grade: [Float]!

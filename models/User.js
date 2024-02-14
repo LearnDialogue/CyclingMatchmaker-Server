@@ -1,4 +1,5 @@
 const { model, Schema } = require("mongoose");
+const eventModel = require('./Event')
 
 // Auxilary gear schema
 const gearSchema = new Schema({
@@ -94,16 +95,7 @@ const userSchema = new Schema({
         default: false,
     },
     equipment: [gearSchema],
-    events: [
-        {
-            _id: String,
-            host: String,
-            name: String,
-            startTime: String,
-            description: String,
-            distance: Number,
-        }
-    ],
+    events: [eventModel.schema],
 });
 
 module.exports = model('User', userSchema);
