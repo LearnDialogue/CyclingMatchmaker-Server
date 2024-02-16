@@ -23,6 +23,10 @@ module.exports = {
                 name,
                 startTime,
                 description,
+                bikeType,
+                difficulty,
+                wattsPerKilo,
+                intensity,
                 points,
                 elevation,
                 grade,
@@ -56,6 +60,10 @@ module.exports = {
                 name: name,
                 startTime: startTime,
                 description: description,
+                bikeType: bikeType,
+                difficulty: difficulty,
+                wattsPerKilo: wattsPerKilo,
+                intensity: intensity,
                 route: resRoute.id,
             });
             const resEvent = await newEvent.save();
@@ -79,6 +87,6 @@ module.exports = {
             const delEvent = await Event.findOneAndDelete({ _id: eventID });
             await Route.deleteOne({ _id: delEvent.route });
             return resEvent.events;
-        }
+        },
     },
 };

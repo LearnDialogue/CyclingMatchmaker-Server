@@ -16,10 +16,27 @@ const eventSchema = new Schema({
     description: {
         type: String,
     },
+    bikeType: {
+        type: String,
+        required: true,
+    },
+    difficulty: {
+        type: String,
+        required: true,
+    },
+    wattsPerKilo: {
+        type: Number,
+        required: true,
+    },
+    intensity: {
+        type: String,
+        required: true,
+    },
     route: {
         type: String,
         required: true,
     },
+    participants: [String],
 });
 
 module.exports = model('Event', eventSchema);

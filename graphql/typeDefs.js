@@ -31,6 +31,7 @@ module.exports = gql`
     type Gear {
         id: ID!
         type: String!
+        subtype: String
         make: String!
         model: String!
         weight: Int!
@@ -44,7 +45,12 @@ module.exports = gql`
         name: String!
         startTime: String!
         description: String
+        bikeType: String!
+        difficulty: String!
+        wattsPerKilo: Float!
+        intensity: String!
         route: String!
+        participants: [String]
     }
 
     ## Event/Route Aux Model
@@ -83,6 +89,7 @@ module.exports = gql`
     input AddGearInput {
         username: String!
         type: String!
+        subtype: String
         make: String!
         model: String!
         weight: Int!
@@ -95,6 +102,10 @@ module.exports = gql`
         name: String!
         startTime: String!
         description: String
+        bikeType: String!
+        difficulty: String!
+        wattsPerKilo: Float!
+        intensity: String!
 
         # Route Input
         points: [[Float]]!
