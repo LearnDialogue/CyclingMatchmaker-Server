@@ -1,5 +1,6 @@
 const User = require("../../models/User.js");
 const Event = require("../../models/Event.js");
+const Route = require("../../models/Route.js");
 
 module.exports = {
 
@@ -36,46 +37,48 @@ module.exports = {
         }) {
             host = host.toLowerCase();
 
-            const newRoute = {
-                points,
-                elevation,
-                grade,
-                terrain,
-                distance,
-                maxElevation,
-                minElevation,
-                totalElevationGain,
-                startCoordinates,
-                endCoordinates,
-            };
+            const newRoute = new Route({
+                points: points,
+                elevation: elevation,
+                grade: grade,
+                terrain: terrain,
+                distance: distance,
+                maxElevation: maxElevation,
+                minElevation: minElevation,
+                totalElevationGain: totalElevationGain,
+                startCoordinates: startCoordinates,
+                endCoordinates: endCoordinates,
+            });
+            const resRoute = await newRoute.save();
 
             const newEvent = new Event({
                 host: host,
                 name: name,
                 startTime: startTime,
                 description: description,
-                route: newRoute,
+                route: resRoute.id,
             });
-            const res = await newEvent.save();
+            const resEvent = await newEvent.save();
 
             await User.findOneAndUpdate(
                 { username: host },
-                { $push: { events: res } },
+                { $push: { events: resEvent.id } },
             );
-            return res;
+            return resEvent;
         },
 
         async deleteEvent(_, {
             host,
             eventID
         }) {
-            const res = await User.findOneAndUpdate(
+            const resEvent = await User.findOneAndUpdate(
                 { username: host },
-                { $pull: { events: { _id: eventID }}},
+                { $pull: { events: eventID }},
                 { returnDocument: 'after'},
             );
-            await Event.deleteOne({ _id: eventID });
-            return res.events;
+            const delEvent = await Event.findOneAndDelete({ _id: eventID });
+            await Route.deleteOne({ _id: delEvent.route });
+            return resEvent.events;
         }
     },
 };

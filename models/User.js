@@ -95,7 +95,7 @@ const userSchema = new Schema({
         default: false,
     },
     equipment: [gearSchema],
-    events: [eventModel.schema],
+    events: [String],
 });
 
 module.exports = model('User', userSchema);

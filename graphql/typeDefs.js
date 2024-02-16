@@ -21,7 +21,7 @@ module.exports = gql`
         equipment: [Gear]
         stravaAPIToken: String
         stravaRefreshToken: String
-        events: [Event]
+        events: [String]
         createdAt: String!
         lastLogin: String!
         emailAuthenticated: String
@@ -44,7 +44,7 @@ module.exports = gql`
         name: String!
         startTime: String!
         description: String
-        route: Route!
+        route: String!
     }
 
     ## Event/Route Aux Model
