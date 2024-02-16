@@ -63,6 +63,7 @@ module.exports = {
             addGearInput: {
                 username,
                 type,
+                subtype,
                 make,
                 model,
                 weight,
@@ -71,6 +72,7 @@ module.exports = {
         }) {
             const newGear = {
                 type,
+                subtype,
                 make,
                 model,
                 weight,

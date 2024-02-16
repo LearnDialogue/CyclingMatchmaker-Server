@@ -1,5 +1,6 @@
 const User = require("../../models/User.js");
 const Event = require("../../models/Event.js");
+const Route = require("../../models/Route.js");
 
 module.exports = {
 
@@ -22,6 +23,10 @@ module.exports = {
                 name,
                 startTime,
                 description,
+                bikeType,
+                difficulty,
+                wattsPerKilo,
+                intensity,
                 points,
                 elevation,
                 grade,
@@ -36,46 +41,84 @@ module.exports = {
         }) {
             host = host.toLowerCase();
 
-            const newRoute = {
-                points,
-                elevation,
-                grade,
-                terrain,
-                distance,
-                maxElevation,
-                minElevation,
-                totalElevationGain,
-                startCoordinates,
-                endCoordinates,
-            };
+            const newRoute = new Route({
+                points: points,
+                elevation: elevation,
+                grade: grade,
+                terrain: terrain,
+                distance: distance,
+                maxElevation: maxElevation,
+                minElevation: minElevation,
+                totalElevationGain: totalElevationGain,
+                startCoordinates: startCoordinates,
+                endCoordinates: endCoordinates,
+            });
+            const resRoute = await newRoute.save();
 
             const newEvent = new Event({
                 host: host,
                 name: name,
                 startTime: startTime,
                 description: description,
-                route: newRoute,
+                bikeType: bikeType,
+                difficulty: difficulty,
+                wattsPerKilo: wattsPerKilo,
+                intensity: intensity,
+                route: resRoute.id,
             });
-            const res = await newEvent.save();
+            const resEvent = await newEvent.save();
 
             await User.findOneAndUpdate(
                 { username: host },
-                { $push: { events: res } },
+                { $push: { eventsHosted: resEvent.id } },
             );
-            return res;
+            return resEvent;
         },
 
         async deleteEvent(_, {
             host,
             eventID
         }) {
-            const res = await User.findOneAndUpdate(
+            const resEvent = await User.findOneAndUpdate(
                 { username: host },
-                { $pull: { events: { _id: eventID }}},
+                { $pull: { eventsHosted: eventID }},
                 { returnDocument: 'after'},
             );
-            await Event.deleteOne({ _id: eventID });
-            return res.events;
+            const delEvent = await Event.findOneAndDelete({ _id: eventID });
+            await Route.deleteOne({ _id: delEvent.route });
+            return resEvent.events;
+        },
+
+        async joinEvent(_, {
+            username,
+            eventID
+        }) {
+            const resEvent = await Event.findOneAndUpdate(
+                { _id: eventID },
+                { $push: { participants: username }},
+                { returnDocument: 'after' },
+            );
+            await User.findOneAndUpdate(
+                { username },
+                { $push: { eventsJoined: eventID }},
+            );
+            return resEvent;
+        },
+
+        async leaveEvent(_, {
+            username,
+            eventID
+        }) {
+            const resEvent = await Event.findOneAndUpdate(
+                { _id: eventID },
+                { $pull: { participants: username }},
+                { returnDocument: 'after' },
+            );
+            await User.findOneAndUpdate(
+                { username },
+                { $pull: { eventsJoined: eventID }},
+            );
+            return resEvent;
         }
     },
 };

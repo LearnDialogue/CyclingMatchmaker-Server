@@ -5,7 +5,11 @@ const eventModel = require('./Event')
 const gearSchema = new Schema({
     type: {
         type: String,
-        required: true
+        required: true,
+    },
+    subtype: {
+        type: String,
+        default: '',
     },
     make: {
         type: String,
@@ -95,7 +99,8 @@ const userSchema = new Schema({
         default: false,
     },
     equipment: [gearSchema],
-    events: [eventModel.schema],
+    eventsHosted: [String],
+    eventsJoined: [String],
 });
 
 module.exports = model('User', userSchema);
