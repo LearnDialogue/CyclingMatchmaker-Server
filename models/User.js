@@ -99,7 +99,8 @@ const userSchema = new Schema({
         default: false,
     },
     equipment: [gearSchema],
-    events: [String],
+    eventsHosted: [String],
+    eventsJoined: [String],
 });
 
 module.exports = model('User', userSchema);

@@ -70,7 +70,7 @@ module.exports = {
 
             await User.findOneAndUpdate(
                 { username: host },
-                { $push: { events: resEvent.id } },
+                { $push: { eventsHosted: resEvent.id } },
             );
             return resEvent;
         },
@@ -81,12 +81,44 @@ module.exports = {
         }) {
             const resEvent = await User.findOneAndUpdate(
                 { username: host },
-                { $pull: { events: eventID }},
+                { $pull: { eventsHosted: eventID }},
                 { returnDocument: 'after'},
             );
             const delEvent = await Event.findOneAndDelete({ _id: eventID });
             await Route.deleteOne({ _id: delEvent.route });
             return resEvent.events;
         },
+
+        async joinEvent(_, {
+            username,
+            eventID
+        }) {
+            const resEvent = await Event.findOneAndUpdate(
+                { _id: eventID },
+                { $push: { participants: username }},
+                { returnDocument: 'after' },
+            );
+            await User.findOneAndUpdate(
+                { username },
+                { $push: { eventsJoined: eventID }},
+            );
+            return resEvent;
+        },
+
+        async leaveEvent(_, {
+            username,
+            eventID
+        }) {
+            const resEvent = await Event.findOneAndUpdate(
+                { _id: eventID },
+                { $pull: { participants: username }},
+                { returnDocument: 'after' },
+            );
+            await User.findOneAndUpdate(
+                { username },
+                { $pull: { eventsJoined: eventID }},
+            );
+            return resEvent;
+        }
     },
 };

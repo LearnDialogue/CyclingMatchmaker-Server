@@ -21,7 +21,8 @@ module.exports = gql`
         equipment: [Gear]
         stravaAPIToken: String
         stravaRefreshToken: String
-        events: [String]
+        eventsHosted: [String]
+        eventsJoined: [String]
         createdAt: String!
         lastLogin: String!
         emailAuthenticated: String
@@ -140,5 +141,7 @@ module.exports = gql`
         # Events
         createEvent(createEventInput: CreateEventInput!): Event!
         deleteEvent(host: String!, eventID: String!): [Event]!
+        joinEvent(username: String!, eventID: String!): Event!
+        leaveEvent(username: String!, eventID: String!): Event!
     }
 `
