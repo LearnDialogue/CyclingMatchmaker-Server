@@ -121,12 +121,12 @@ module.exports = {
             });
             const res = await newUser.save();
 
-            const token = generateToken(newUser, "24h");
+            const loginToken = generateToken(newUser, "24h");
 
             return {
                 ...res._doc,
                 id: res._id,
-                token,
+                loginToken,
             };
         },
 
@@ -157,12 +157,12 @@ module.exports = {
             }
 
             time = remember === "true" || remember === true ? "30d" : "24h";
-            const token = generateToken(user, time);
+            const loginToken = generateToken(user, time);
 
             return {
                 ...user._doc,
                 id: user._id,
-                token,
+                loginToken,
             };
         },
 

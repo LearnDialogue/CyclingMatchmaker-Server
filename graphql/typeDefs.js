@@ -19,6 +19,7 @@ module.exports = gql`
         FTP: Float
         FTPdate: String
         equipment: [Gear]
+        loginToken: String
         stravaAPIToken: String
         stravaRefreshToken: String
         eventsHosted: [String]
