@@ -1,15 +1,10 @@
 const { ApolloServer } = require("@apollo/server");
 const { startStandaloneServer } = require("@apollo/server/standalone");
-const { mergeResolvers } = require("@graphql-tools/merge");
 const mongoose = require("mongoose");
 require("dotenv").config();
 
 const typeDefs = require("./graphql/typeDefs.js");
-
-// Import Resolvers
-const usersResolver = require("./graphql/resolvers/users.js");
-const eventsResolver = require("./graphql/resolvers/events.js");
-const resolvers = mergeResolvers([usersResolver, eventsResolver]);
+const resolvers = require("./graphql/resolvers");
 
 const server = new ApolloServer({
     typeDefs,
