@@ -1,15 +1,54 @@
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+
+const {
+    handleInputError,
+    handleGeneralError,
+  } = require("../../util/error-handling");
+
+const {
+    validateRegisterInput,
+    validateLoginInput
+} = require('../../util/validators');
+  
+
 const User = require("../../models/User.js");
+require("dotenv").config();
+
+function generateToken(user, time) {
+    return jwt.sign(
+      {
+        id: user.id,
+        email: user.email,
+        username: user.username,
+        firstName: user.firstName,
+        lastName: user.lastName,
+      },
+      process.env.SECRET,
+      {
+        expiresIn: time,
+      }
+    );
+  }
 
 module.exports = {
     Query: {
         async getUser(_, { username }) {
-            const user = await User.findOne({ username });
-            return user;
+            try {
+                const user = await User.findOne({ username });
+                return user;
+            } catch (error) {
+                handleGeneralError(error, "User not found.");
+            }
         },
 
         async getUsers() {
-            const users = await User.find();
-            return users;
+            try {
+                const users = await User.find();
+                return users;
+            } catch (error) {
+                handleGeneralError(error, "Users not found.");
+            }
         },
     },
 
@@ -19,6 +58,7 @@ module.exports = {
                 username,
                 email,
                 password,
+                confirmPassword,
                 firstName,
                 lastName,
                 sex,
@@ -31,6 +71,37 @@ module.exports = {
             lastName = lastName.trim();
             email = email.toLowerCase();
             username = username.toLowerCase();
+
+            const { valid, errors } = validateRegisterInput(
+                username,
+                email,
+                password,
+                confirmPassword,
+                firstName,
+                lastName,
+                sex,
+                birthday,
+                weight,
+                metric,
+            )
+
+            if (!valid) {
+                handleInputError(errors);
+            }
+
+            const usernameCheck = await User.findOne({ username });
+            if (usernameCheck) {
+                errors.general = "An account with that username already exists.";
+                handleInputError(errors);
+            }
+    
+            const emailCheck = await User.findOne({ email });
+            if (emailCheck) {
+                errors.general = "An account with that e-mail already exists.";
+                handleInputError(errors);
+            }
+
+            password = await bcrypt.hash(password, 12);
 
             const newUser = new User({
                 username: username,
@@ -45,18 +116,54 @@ module.exports = {
                 createdAt: new Date().toISOString(),
                 lastLogin: new Date().toISOString(),
                 gear: [],
-                events: [],
+                eventsHosted: [],
+                eventsJoined: [],
             });
             const res = await newUser.save();
+
+            const token = generateToken(newUser, "24h");
 
             return {
                 ...res._doc,
                 id: res._id,
+                token,
             };
         },
 
-        async login(_, { username, password, remember }) {
-            // Logic to login user
+        async login(_, { 
+            loginInput: {
+                username,
+                password,
+                remember,
+            },
+        }) {
+            username = username.toLowerCase();
+            const { errors, valid } = validateLoginInput(username, password);
+
+            if (!valid) {
+                handleInputError(errors);
+            }
+
+            const user = await User.findOne({ username });
+            if (!user) {
+                errors.general = "User not found.";
+                handleInputError(errors);
+            }
+
+            const passwordCheck = await bcrypt.compare(password, user.password);
+            if (!passwordCheck) {
+              errors.general = "Wrong credentials.";
+              handleInputError(errors);
+            }
+
+            time = remember === "true" || remember === true ? "30d" : "24h";
+            const token = generateToken(user, time);
+
+            return {
+                ...user._doc,
+                id: user._id,
+                token,
+            };
         },
 
         async addGear(_, {
