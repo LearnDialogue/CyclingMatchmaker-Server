@@ -128,6 +128,8 @@ module.exports = gql`
         # Users
         getUser(username: String!): User!
         getUsers: [User]!
+        validUsername(username: String!): Boolean!
+        validEmail(email: String!): Boolean!
         # Events
         getEvent(eventID: String!): Event!
         getEvents: [Event]!

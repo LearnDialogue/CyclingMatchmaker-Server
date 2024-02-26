@@ -50,6 +50,16 @@ module.exports = {
                 handleGeneralError(error, "Users not found.");
             }
         },
+
+        async validUsername(_, { username }) {
+            const user = await User.findOne({ username: username.toLowerCase() });
+            return user ? false : true;
+        },
+
+        async validEmail(_, { email }) {
+            const user = await User.findOne({ email: email.toLowerCase() });
+            return user ? false : true;
+        },
     },
 
     Mutation: {
