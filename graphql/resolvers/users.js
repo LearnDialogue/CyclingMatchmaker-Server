@@ -8,7 +8,9 @@ const {
 
 const {
     validateRegisterInput,
-    validateLoginInput
+    validateLoginInput,
+    validateUsername,
+    validateEmail,
 } = require('../../util/validators');
   
 
@@ -53,12 +55,24 @@ module.exports = {
 
         async validUsername(_, { username }) {
             const user = await User.findOne({ username: username.toLowerCase() });
-            return user ? false : true;
+            if (user) return false;
+
+            const { valid, errors } = validateUsername(username);
+            if (!valid) {
+                handleInputError(errors);
+            }
+            return true;
         },
 
         async validEmail(_, { email }) {
             const user = await User.findOne({ email: email.toLowerCase() });
-            return user ? false : true;
+            if (user) return false;
+
+            const { valid, errors } = validateEmail(email);
+            if (!valid) {
+                handleInputError(errors);
+            }
+            return true;
         },
     },
 
