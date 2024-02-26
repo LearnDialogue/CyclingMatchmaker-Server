@@ -1,4 +1,5 @@
-const bcrypt = require("bcryptjs");
+const GraphQLError = require('graphql').GraphQLError;
+const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const {
@@ -15,7 +16,6 @@ const {
   
 
 const User = require("../../models/User.js");
-require("dotenv").config();
 
 function generateToken(user, time) {
     return jwt.sign(
@@ -33,6 +33,64 @@ function generateToken(user, time) {
     );
   }
 
+/*
+This function checks if a user's strava token has expired.
+If the token has expired, a new token will be requested from strava
+and the respective fields in the user document will be updated.
+Returns the strava expiration date.
+*/
+async function checkStravaToken(username) {
+    //check for token expiry
+    try {
+        const user = await User.findOne({ username }).select('stravaRefreshToken', 'stravaTokenExpiration');
+        if (user.stravaTokenExpiration < new Date()) {
+            //token has expired, request new one
+            return refreshStravaToken(username, user.stravaRefreshToken);
+        }
+    } catch (error) {
+        handleGeneralError(error, "User not found.");
+    }
+}
+async function refreshStravaToken(username, refreshToken) {
+    try {
+        const queryParams = new URLSearchParams({
+            client_id: process.env.STRAVA_CLIENT_ID,
+            client_secret: process.env.STRAVA_CLIENT_SECRET,
+            grant_type: 'refresh_token',
+            refresh_token: refreshToken
+        });
+        
+        const response = await fetch(`https://www.strava.com/oauth/token?${queryParams}`,
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ key: 'value' }),
+        });
+
+        const responseData = await response.json();
+        const APIToken = responseData.access_token;
+        const refreshToken = responseData.refresh_token;
+        const tokenExpiration = new Date(responseData.expires_at).toISOString();
+        const user = await User.findOneAndUpdate(
+            {username: username},
+            {
+                stravaAPIToken: APIToken,
+                stravaRefreshToken: refreshToken,
+                stravaTokenExpiration: tokenExpiration 
+            }
+        );
+        return tokenExpiration;
+    } catch (error) {
+        throw new GraphQLError(err, {
+            extensions: {
+                code: 'Internal Server Error'
+            }
+        })
+    }
+    return null;
+}
 module.exports = {
     Query: {
         async getUser(_, { username }) {
@@ -74,6 +132,26 @@ module.exports = {
             }
             return true;
         },
+        async requestStravaAuthorization(_, contextValue) {
+            //check auth for user
+            if (!contextValue.user) {
+                throw new GraphQLError('You must be logged in to perform this action.', {
+                    extensions: {
+                        code: 'UNAUTHENTICATED',
+                    },
+                })
+            }
+            //construct oauth url
+            const queryParams = new URLSearchParams({
+                client_id: process.env.STRAVA_CLIENT_ID,
+                redirect_uri: process.env.CLIENT_URI,
+                scope: 'activity:read_all,profile:read_all',
+                response_type: 'code',
+                approval_prompt: 'auto'
+            })
+
+            return `https://www.strava.com/oauth/authorize?${queryParams}`
+        }
     },
 
     Mutation: {
@@ -227,6 +305,72 @@ module.exports = {
                 { returnDocument: 'after'},
             );
             return res.equipment;
-        }
+        },
+
+        async exchangeStravaAuthorizationCode(_,
+            {
+                code,
+                scope
+            },
+            contextValue)
+        {
+            //check user auth
+            if(!contextValue.user.username) {
+                throw new GraphQLError('You must be logged in to perform this action.', {
+                    extensions: {
+                        code: 'UNAUTHENTICATED',
+                    },
+                })
+            }
+            //check that scope is what we need
+            const scopeArray = scope.split(',');
+            if (!scopeArray.includes('activity:read_all') || !scopeArray.includes('profile:read_all')) {
+                throw new GraphQLError('Scope does not include correct permissions.', {
+                    extensions: {
+                        code: 'BAD_USER_INPUT'
+                    }
+                });
+            }
+            //exchange tokens with Strava
+            const queryParams = new URLSearchParams({
+                client_id: process.env.STRAVA_CLIENT_ID,
+                client_secret: process.env.STRAVA_CLIENT_SECRET,
+                code: code,
+                grant_type: 'authorization_code'
+            });
+            
+            try {
+                const response = await fetch(`https://www.strava.com/oauth/token?${queryParams}`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ key: 'value' }),
+                });
+
+                const responseData = await response.json();
+                const APIToken = responseData.access_token;
+                const refreshToken = responseData.refresh_token;
+                const tokenExpiration = new Date(responseData.expires_at).toISOString();
+                //store user's access
+                const user = await User.findOneAndUpdate(
+                    {username: contextValue.user.username},
+                    {
+                        stravaAPIToken: APIToken,
+                        stravaRefreshToken: refreshToken,
+                        stravaTokenExpiration: tokenExpiration 
+                    }
+                )
+                return user;
+            } catch(err) {
+                throw new GraphQLError(err, {
+                    extensions: {
+                        code: 'Internal Server Error'
+                    }
+                })
+            }
+            return null;
+        },
     }
 };
