@@ -111,6 +111,29 @@ module.exports = {
             }
         },
 
+<<<<<<< HEAD
+=======
+        async requestStravaAuthorization() {
+            //check auth for user
+            if (!contextValue) {
+                throw new GraphQLError('You must be logged in to perform this action.', {
+                    extensions: {
+                        code: 'UNAUTHENTICATED',
+                    },
+                })
+            }
+            //construct oauth url
+            const queryParams = new URLSearchParams({
+                client_id: process.env.STRAVA_CLIENT_ID,
+                redirect_uri: process.env.CLIENT_URI,
+                scope: 'activity:read_all,profile:read_all',
+                response_type: 'code',
+                approval_prompt: 'auto'
+            })
+
+            return `https://www.strava.com/oauth/authorize?${queryParams}`
+        },
+>>>>>>> 0ca6321 (resolve merge conflicts)
         async validUsername(_, { username }) {
             const user = await User.findOne({ username: username.toLowerCase() });
             if (user) return false;
@@ -132,6 +155,7 @@ module.exports = {
             }
             return true;
         },
+<<<<<<< HEAD
         async requestStravaAuthorization() {
             //check auth for user
             if (!contextValue) {
@@ -152,6 +176,8 @@ module.exports = {
 
             return `https://www.strava.com/oauth/authorize?${queryParams}`
         }
+=======
+>>>>>>> 0ca6321 (resolve merge conflicts)
     },
 
     Mutation: {
