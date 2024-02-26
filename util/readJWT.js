@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const { GraphQLError } = require('graphql');
 
-module.exports = async (authHeader) => {
+module.exports.readJWT = (authHeader) => {
     if (authHeader) {
         const token = authHeader.split('Bearer ')[1];
         

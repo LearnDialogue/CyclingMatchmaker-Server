@@ -18,7 +18,7 @@ async function startApolloServer() {
         listen: { port },
         context: async ({ req, res }) => {
           const authHeader = req.headers.authorization || '';
-          const user = await readJWT(authHeader);
+          const user = readJWT(authHeader);
           return { user };
         },
     });

@@ -1,4 +1,5 @@
-const bcrypt = require("bcryptjs");
+const GraphQLError = require('graphql').GraphQLError;
+const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const {
@@ -15,7 +16,6 @@ const {
   
 
 const User = require("../../models/User.js");
-require("dotenv").config();
 
 function generateToken(user, time) {
     return jwt.sign(
@@ -45,13 +45,13 @@ async function checkStravaToken(username) {
         const user = await User.findOne({ username }).select('stravaRefreshToken', 'stravaTokenExpiration');
         if (user.stravaTokenExpiration < new Date()) {
             //token has expired, request new one
-            return refreshStravaToken(user.stravaRefreshToken);
+            return refreshStravaToken(username, user.stravaRefreshToken);
         }
     } catch (error) {
         handleGeneralError(error, "User not found.");
     }
 }
-async function refreshStravaToken(refreshToken) {
+async function refreshStravaToken(username, refreshToken) {
     try {
         const queryParams = new URLSearchParams({
             client_id: process.env.STRAVA_CLIENT_ID,
@@ -74,7 +74,7 @@ async function refreshStravaToken(refreshToken) {
         const refreshToken = responseData.refresh_token;
         const tokenExpiration = new Date(responseData.expires_at).toISOString();
         const user = await User.findOneAndUpdate(
-            {username: contextValue.username},
+            {username: username},
             {
                 stravaAPIToken: APIToken,
                 stravaRefreshToken: refreshToken,
@@ -111,29 +111,6 @@ module.exports = {
             }
         },
 
-<<<<<<< HEAD
-=======
-        async requestStravaAuthorization() {
-            //check auth for user
-            if (!contextValue) {
-                throw new GraphQLError('You must be logged in to perform this action.', {
-                    extensions: {
-                        code: 'UNAUTHENTICATED',
-                    },
-                })
-            }
-            //construct oauth url
-            const queryParams = new URLSearchParams({
-                client_id: process.env.STRAVA_CLIENT_ID,
-                redirect_uri: process.env.CLIENT_URI,
-                scope: 'activity:read_all,profile:read_all',
-                response_type: 'code',
-                approval_prompt: 'auto'
-            })
-
-            return `https://www.strava.com/oauth/authorize?${queryParams}`
-        },
->>>>>>> 0ca6321 (resolve merge conflicts)
         async validUsername(_, { username }) {
             const user = await User.findOne({ username: username.toLowerCase() });
             if (user) return false;
@@ -155,10 +132,9 @@ module.exports = {
             }
             return true;
         },
-<<<<<<< HEAD
-        async requestStravaAuthorization() {
+        async requestStravaAuthorization(_, contextValue) {
             //check auth for user
-            if (!contextValue) {
+            if (!contextValue.user) {
                 throw new GraphQLError('You must be logged in to perform this action.', {
                     extensions: {
                         code: 'UNAUTHENTICATED',
@@ -176,8 +152,6 @@ module.exports = {
 
             return `https://www.strava.com/oauth/authorize?${queryParams}`
         }
-=======
->>>>>>> 0ca6321 (resolve merge conflicts)
     },
 
     Mutation: {
@@ -333,12 +307,15 @@ module.exports = {
             return res.equipment;
         },
 
-        async exchangeStravaAuthorizationCode(_, {
-            code,
-            scope
-        }) {
+        async exchangeStravaAuthorizationCode(_,
+            {
+                code,
+                scope
+            },
+            contextValue)
+        {
             //check user auth
-            if(!contextValue.username) {
+            if(!contextValue.user.username) {
                 throw new GraphQLError('You must be logged in to perform this action.', {
                     extensions: {
                         code: 'UNAUTHENTICATED',
@@ -346,8 +323,8 @@ module.exports = {
                 })
             }
             //check that scope is what we need
-            const scope = scope.split(',');
-            if (!scope.includes('activity:read_all') || scope.includes('profile:read_all')) {
+            const scopeArray = scope.split(',');
+            if (!scopeArray.includes('activity:read_all') || !scopeArray.includes('profile:read_all')) {
                 throw new GraphQLError('Scope does not include correct permissions.', {
                     extensions: {
                         code: 'BAD_USER_INPUT'
@@ -378,13 +355,14 @@ module.exports = {
                 const tokenExpiration = new Date(responseData.expires_at).toISOString();
                 //store user's access
                 const user = await User.findOneAndUpdate(
-                    {username: contextValue.username},
+                    {username: contextValue.user.username},
                     {
                         stravaAPIToken: APIToken,
                         stravaRefreshToken: refreshToken,
                         stravaTokenExpiration: tokenExpiration 
                     }
                 )
+                return user;
             } catch(err) {
                 throw new GraphQLError(err, {
                     extensions: {

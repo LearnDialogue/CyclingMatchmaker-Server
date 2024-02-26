@@ -22,6 +22,7 @@ module.exports = gql`
         loginToken: String
         stravaAPIToken: String
         stravaRefreshToken: String
+        stravaTokenExpiration: String
         eventsHosted: [String]
         eventsJoined: [String]
         createdAt: String!
@@ -130,7 +131,7 @@ module.exports = gql`
         getUsers: [User]!
         validUsername(username: String!): Boolean!
         validEmail(email: String!): Boolean!
-        requestStravaAuthorization(): String!
+        requestStravaAuthorization: String!
         # Events
         getEvent(eventID: String!): Event!
         getEvents: [Event]!
