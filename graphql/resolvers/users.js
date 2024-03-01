@@ -191,7 +191,7 @@ module.exports = {
                 name = locationName;
                 coords = locationCoords;
             } else if (locationName) {
-                const fetchedData = await fetchLocation(locationName);
+                const fetchedData = await fetchLocation(locationName, null);
                 name = fetchedData.display_name;
                 coords = [fetchedData.lon, fetchedData.lat];
             }

@@ -9,7 +9,7 @@ const eventSchema = new Schema({
         type: String,
         required: true,
     },
-    loccationName: {
+    locationName: {
         type: String,
     },
     locationCoords: {
