@@ -128,6 +128,13 @@ module.exports = gql`
         endCoordinates: [Float]!
     }
 
+    input SetRegionInput {
+        username: String!
+        locationName: String
+        locationCoords: [Float]
+        radius: Float
+    }
+
     ## QUERY LIST
     type Query {
         # Users
@@ -146,7 +153,7 @@ module.exports = gql`
         login(loginInput: LoginInput!): User!
         addGear(addGearInput: AddGearInput!): [Gear]!
         removeGear(username: String!, gearID: String!): [Gear]!
-        setRegion(username: String!, location: String!, radius: Float!): User!
+        setRegion(setRegionInput: SetRegionInput): User!
         # Events
         createEvent(createEventInput: CreateEventInput!): Event!
         deleteEvent(host: String!, eventID: String!): [Event]!

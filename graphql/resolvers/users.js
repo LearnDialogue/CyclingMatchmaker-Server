@@ -168,19 +168,39 @@ module.exports = {
             };
         },
 
+        /*
+        Front-end should cache all unique calls to this function. If calling for the first time, 
+        include just these arguments: USERNAME, LOCATIONNAME. If calling on a cached query, 
+        include these arguments, which should be pulled from the storage on the front end. 
+        Arguments: USERNAME, LOCATIONCOORDS, LOCATIONNAME. If you want to change radius, it can
+        be included in any combination of the function call, even just by itself. Don't forget
+        to include the username for all function calls.
+         */
         async setRegion(_, {
-            username,
-            location,
-            radius,
+            setRegionInput: {
+                username,
+                locationCoords,
+                locationName,
+                radius,
+            }
         }) {
-            const locationData = await fetchLocation(location);
-            const locationName = locationData.display_name;
-            const locationCoords = [locationData.lon, locationData.lat];
+            var name;
+            var coords;
+
+            if (locationCoords) {
+                name = locationName;
+                coords = locationCoords;
+            } else if (locationName) {
+                const fetchedData = await fetchLocation(locationName);
+                name = fetchedData.display_name;
+                coords = [fetchedData.lon, fetchedData.lat];
+            }
+
             const updatedUser = await User.findOneAndUpdate(
                 { username },
                 {
-                    locationName: locationName,
-                    locationCoords: locationCoords,
+                    locationName: name,
+                    locationCoords: coords,
                     radius: radius,
                 },
                 { returnDocument: 'after'},
