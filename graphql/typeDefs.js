@@ -15,6 +15,9 @@ module.exports = gql`
         sex: String!
         birthday: String!
         weight: Int!
+        locationName: String
+        locationCoords: [Float]
+        radius: Float
         metric: Boolean!
         FTP: Float
         FTPdate: String
@@ -45,6 +48,8 @@ module.exports = gql`
         id: ID!
         host: String!
         name: String!
+        locationName: String!
+        locationCoords: [Float]!
         startTime: String!
         description: String
         bikeType: String!
@@ -130,16 +135,18 @@ module.exports = gql`
         getUsers: [User]!
         # Events
         getEvent(eventID: String!): Event!
-        getEvents: [Event]!
+        getAllEvents: [Event]!
+        getEvents(username: String!): [Event]!
     }
 
     ## MUTATION LIST
     type Mutation {
         # Users
-        register(registerInput: RegisterInput): User!
-        login(loginInput: LoginInput): User!
-        addGear(addGearInput: AddGearInput): [Gear]!
+        register(registerInput: RegisterInput!): User!
+        login(loginInput: LoginInput!): User!
+        addGear(addGearInput: AddGearInput!): [Gear]!
         removeGear(username: String!, gearID: String!): [Gear]!
+        setRegion(username: String!, location: String!, radius: Float!): User!
         # Events
         createEvent(createEventInput: CreateEventInput!): Event!
         deleteEvent(host: String!, eventID: String!): [Event]!

@@ -11,8 +11,10 @@ const {
     validateLoginInput
 } = require('../../util/validators');
   
+const { fetchLocation } = require('../../util/geocoder.js');
 
 const User = require("../../models/User.js");
+
 require("dotenv").config();
 
 function generateToken(user, time) {
@@ -164,6 +166,26 @@ module.exports = {
                 id: user._id,
                 loginToken,
             };
+        },
+
+        async setRegion(_, {
+            username,
+            location,
+            radius,
+        }) {
+            const locationData = await fetchLocation(location);
+            const locationName = locationData.display_name;
+            const locationCoords = [locationData.lon, locationData.lat];
+            const updatedUser = await User.findOneAndUpdate(
+                { username },
+                {
+                    locationName: locationName,
+                    locationCoords: locationCoords,
+                    radius: radius,
+                },
+                { returnDocument: 'after'},
+            );
+            return updatedUser;
         },
 
         async addGear(_, {

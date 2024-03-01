@@ -10,9 +10,23 @@ module.exports = {
             return event;
         },
 
-        async getEvents() {
+        async getAllEvents() {
             const events = await Event.find();
             return events;
+        },
+
+        async getEvents(_, { username }) {
+            const user = await User.findOne({ username });
+            const events = await Event.find({
+                "locationCoords": {
+                    $geoWithin: {
+                        $centerSphere: [
+                            user.locationCoords,
+                            user.radius / 6378.1]
+                    }
+                }
+            });
+        return events;
         },
     },
 
@@ -55,9 +69,12 @@ module.exports = {
             });
             const resRoute = await newRoute.save();
 
+            const locCoords = [startCoordinates[1],startCoordinates[0]];
+
             const newEvent = new Event({
                 host: host,
                 name: name,
+                locationCoords: locCoords,
                 startTime: startTime,
                 description: description,
                 bikeType: bikeType,
