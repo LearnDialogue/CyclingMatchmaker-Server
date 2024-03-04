@@ -157,7 +157,7 @@ module.exports = gql`
         login(loginInput: LoginInput!): User!
         addGear(addGearInput: AddGearInput!): [Gear]!
         removeGear(username: String!, gearID: String!): [Gear]!
-        setRegion(setRegionInput: SetRegionInput): User!
+        setRegion(setRegionInput: SetRegionInput!): User!
         exchangeStravaAuthorizationCode(code: String!, scope: String!): User!
         # Events
         createEvent(createEventInput: CreateEventInput!): Event!
