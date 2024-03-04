@@ -50,7 +50,7 @@ module.exports.validateRegisterInput = (
     } else {
       if (!firstName.match(nameValidator)) {
         errors.firstName =
-          "First Name must be at least 1 character, max 20. No special characters or numbers."; // change to minimum 1
+          "First Name must be at least 1 character, max 20. No special characters or numbers.";
       }
     }
   
@@ -59,7 +59,7 @@ module.exports.validateRegisterInput = (
     } else {
       if (!lastName.match(nameValidator)) {
         errors.lastName =
-          "Last name must be at least 1 character, max 20. No special characters or numbers."; // change to minimum 1
+          "Last name must be at least 1 character, max 20. No special characters or numbers.";
       }
     }
   
