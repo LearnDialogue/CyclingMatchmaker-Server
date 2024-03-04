@@ -9,6 +9,12 @@ const eventSchema = new Schema({
         type: String,
         required: true,
     },
+    locationName: {
+        type: String,
+    },
+    locationCoords: {
+        type: [Number],
+    },
     startTime: {
         type: String,
         required: true,

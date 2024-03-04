@@ -14,8 +14,11 @@ const {
     validateEmail,
 } = require('../../util/validators');
   
+const { fetchLocation } = require('../../util/geocoder.js');
 
 const User = require("../../models/User.js");
+
+require("dotenv").config();
 
 function generateToken(user, time) {
     return jwt.sign(
@@ -266,6 +269,46 @@ module.exports = {
                 id: user._id,
                 loginToken,
             };
+        },
+
+        /*
+        Front-end should cache all unique calls to this function. If calling for the first time, 
+        include just these arguments: USERNAME, LOCATIONNAME. If calling on a cached query, 
+        include these arguments, which should be pulled from the storage on the front end. 
+        Arguments: USERNAME, LOCATIONCOORDS, LOCATIONNAME. If you want to change radius, it can
+        be included in any combination of the function call, even just by itself. Don't forget
+        to include the username for all function calls.
+         */
+        async setRegion(_, {
+            setRegionInput: {
+                username,
+                locationCoords,
+                locationName,
+                radius,
+            }
+        }) {
+            var name;
+            var coords;
+
+            if (locationCoords) {
+                name = locationName;
+                coords = locationCoords;
+            } else if (locationName) {
+                const fetchedData = await fetchLocation(locationName, null);
+                name = fetchedData.display_name;
+                coords = [fetchedData.lon, fetchedData.lat];
+            }
+
+            const updatedUser = await User.findOneAndUpdate(
+                { username },
+                {
+                    locationName: name,
+                    locationCoords: coords,
+                    radius: radius,
+                },
+                { returnDocument: 'after'},
+            );
+            return updatedUser;
         },
 
         async addGear(_, {

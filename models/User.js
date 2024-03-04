@@ -1,5 +1,4 @@
 const { model, Schema } = require("mongoose");
-const eventModel = require('./Event')
 
 // Auxilary gear schema
 const gearSchema = new Schema({
@@ -64,6 +63,15 @@ const userSchema = new Schema({
     weight: {
         type: Number,
         required: true,
+    },
+    locationName: {
+        type: String,
+    },
+    locationCoords: {
+        type: [Number],
+    },
+    radius: {
+        type: Number,
     },
     metric: {
         type: Boolean,
