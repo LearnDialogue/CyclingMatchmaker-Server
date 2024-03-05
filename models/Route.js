@@ -14,12 +14,10 @@ const routeSchema = new Schema({
     grade: {
         type: [Number],
         default: [],
-        required: true,
     },
     terrain: {
         type: [String],
         default: [],
-        required: true,
     },
     distance: {
         type: Number,
