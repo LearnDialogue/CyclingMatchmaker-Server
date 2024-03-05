@@ -135,7 +135,7 @@ module.exports = {
             }
             return true;
         },
-        async requestStravaAuthorization(_, contextValue) {
+        async requestStravaAuthorization(_, __, contextValue) {
             //check auth for user
             if (!contextValue.user) {
                 throw new GraphQLError('You must be logged in to perform this action.', {
@@ -223,6 +223,9 @@ module.exports = {
                 gear: [],
                 eventsHosted: [],
                 eventsJoined: [],
+                locationName: "Gainesville, FL",
+                locationCoords: [-82.355659, 29.643946],
+                radius: 30,
             });
             const res = await newUser.save();
 
