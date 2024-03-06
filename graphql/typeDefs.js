@@ -31,6 +31,7 @@ module.exports = gql`
         createdAt: String!
         lastLogin: String!
         emailAuthenticated: String
+        permission: String!
     }
 
     ## User/Gear Aux Model

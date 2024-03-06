@@ -110,6 +110,10 @@ const userSchema = new Schema({
         type: Boolean,
         default: false,
     },
+    permission: {
+        type: String,
+        default: "member",
+    },
     equipment: [gearSchema],
     eventsHosted: [String],
     eventsJoined: [String],

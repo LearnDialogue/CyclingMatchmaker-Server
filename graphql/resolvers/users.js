@@ -28,6 +28,7 @@ function generateToken(user, time) {
         username: user.username,
         firstName: user.firstName,
         lastName: user.lastName,
+        permission: user.permission,
       },
       process.env.SECRET,
       {
@@ -220,6 +221,7 @@ module.exports = {
                 metric: metric,
                 createdAt: new Date().toISOString(),
                 lastLogin: new Date().toISOString(),
+                permission: "member",
                 gear: [],
                 eventsHosted: [],
                 eventsJoined: [],
