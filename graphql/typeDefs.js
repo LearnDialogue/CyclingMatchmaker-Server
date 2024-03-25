@@ -144,9 +144,9 @@ module.exports = gql`
         pageSize: Int
         startDate: Date!
         endDate: Date
-        bikeType: [String]
+        bikeType: [String!]
         location: String
-        radius: Int!
+        radius: Int
         match: [String]
     }
 
@@ -161,7 +161,7 @@ module.exports = gql`
         # Events
         getEvent(eventID: String!): Event!
         getAllEvents: [Event]!
-        getEvents(getEventsInput: GetEventsInput!): [Event]!
+        getEvents(getEventsInput: GetEventsInput!): [Event!]!
     }
 
     ## MUTATION LIST

@@ -1,3 +1,4 @@
+const GraphQLError = require('graphql').GraphQLError;
 const User = require("../../models/User.js");
 const Event = require("../../models/Event.js");
 const Route = require("../../models/Route.js");
@@ -28,8 +29,7 @@ module.exports = {
                 radius,
                 match,
             },
-            contextValue
-        }) {
+        }, contextValue) {
             if (!contextValue.user.username) {
                 throw new GraphQLError('You must be logged in to perform this action.', {
                     extensions: {
@@ -40,18 +40,18 @@ module.exports = {
             //check if location and/or radius is null
             let locationCoords = null;
             if(!location | !radius) {
-                geoParam = await User.findOne({ username: contextValue.user.username }).select('locationCoords', 'radius');
+                geoParam = await User.findOne({ username: contextValue.user.username }).select('locationCoords radius');
                 if (!location)
                     locationCoords = geoParam.locationCoords;
                 if (!radius)
                     radius = geoParam.radius;
             }
             //if location string provided, find corresponding coords
-            else if (!locationCoords){
+            else if (locationCoords.length === 0){
                 const fetchResult = await fetchLocation(location, null);
                 locationCoords = [fetchResult.lon, fetchResult.lat];
             }
-            if (!locationCoords) {
+            if (locationCoords.length === 0) {
                 throw new GraphQLError('Location not provided nor found in user document.', {
                     extensions: {
                         code: 'BAD_USER_INPUT'
@@ -62,6 +62,9 @@ module.exports = {
                 page = 0;
             if(!pageSize)
                 pageSize = 50;
+            if(!bikeType) {
+                bikeType = [];
+            }
 
             const events = await Event.aggregate(
                 [   
@@ -74,13 +77,18 @@ module.exports = {
                                         radius / 6378.1]
                                 }
                             },
-                            startTime: {
+                            startTime: endDate ?
+                            {
                                 $gte: startDate,
                                 $lte: endDate,
+                            } : 
+                            {
+                                $gte: startDate
                             },
-                            bikeType: {
+                            bikeType: bikeType.length ?
+                            {
                                 $in: bikeType
-                            },
+                            } : {$nin: []},
                         }
                     },
                     {
@@ -91,8 +99,7 @@ module.exports = {
                     }
                 ]
             );
-
-            return events;
+            return events[0].data;
         },
     },
 
