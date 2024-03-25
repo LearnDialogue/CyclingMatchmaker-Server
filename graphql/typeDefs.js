@@ -112,7 +112,7 @@ module.exports = gql`
         # Event Input
         host: String!
         name: String!
-        startTime: String!
+        startTime: Date!
         description: String
         bikeType: String!
         difficulty: String!

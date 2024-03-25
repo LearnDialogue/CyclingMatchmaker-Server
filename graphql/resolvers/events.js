@@ -125,7 +125,14 @@ module.exports = {
                 startCoordinates,
                 endCoordinates,
             },
-        }) {
+        }, contextValue) {
+            if (!contextValue.user.username) {
+                throw new GraphQLError('You must be logged in to perform this action.', {
+                    extensions: {
+                        code: 'UNAUTHENTICATED',
+                    },
+                })
+            }
             host = host.toLowerCase();
 
             const newRoute = new Route({
