@@ -46,7 +46,7 @@ Returns the strava expiration date.
 async function checkStravaToken(username) {
     //check for token expiry
     try {
-        const user = await User.findOne({ username }).select('stravaRefreshToken', 'stravaTokenExpiration');
+        const user = await User.findOne({ username }).select('stravaRefreshToken stravaTokenExpiration');
         if (user.stravaTokenExpiration < new Date()) {
             //token has expired, request new one
             return refreshStravaToken(username, user.stravaRefreshToken);

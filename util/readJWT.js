@@ -4,7 +4,6 @@ const { GraphQLError } = require('graphql');
 module.exports.readJWT = (authHeader) => {
     if (authHeader) {
         const token = authHeader.split('Bearer ')[1];
-        
         if (token) {
             try {
                 const user = jwt.verify(token, process.env.SECRET);
