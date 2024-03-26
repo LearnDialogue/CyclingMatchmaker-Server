@@ -30,6 +30,11 @@ module.exports = {
             });
         return events;
         },
+
+        async getRoute(_, { routeID }) {
+            const route = await Route.findOne({ _id: routeID });
+            return route;
+        }
     },
 
     Mutation: {

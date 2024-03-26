@@ -149,6 +149,8 @@ module.exports = gql`
         getEvent(eventID: String!): Event!
         getAllEvents: [Event]!
         getEvents(username: String!): [Event]!
+        # Routes
+        getRoute(routeID: String!): Route!
     }
 
     ## MUTATION LIST
