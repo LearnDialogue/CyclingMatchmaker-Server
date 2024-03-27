@@ -145,6 +145,7 @@ module.exports = gql`
         startDate: Date!
         endDate: Date
         bikeType: [String!]
+        wkg: [String!]
         location: String
         radius: Int
         match: [String]

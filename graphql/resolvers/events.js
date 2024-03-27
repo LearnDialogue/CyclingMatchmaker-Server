@@ -25,6 +25,7 @@ module.exports = {
                 startDate,
                 endDate,
                 bikeType,
+                wkg,
                 location,
                 radius,
                 match,
@@ -65,6 +66,9 @@ module.exports = {
             if(!bikeType) {
                 bikeType = [];
             }
+            if(!wkg) {
+                wkg = [];
+            }
 
             const events = await Event.aggregate(
                 [   
@@ -88,6 +92,10 @@ module.exports = {
                             bikeType: bikeType.length ?
                             {
                                 $in: bikeType
+                            } : {$nin: []},
+                            difficulty: wkg.length ?
+                            {
+                                $in: wkg
                             } : {$nin: []},
                         }
                     },
