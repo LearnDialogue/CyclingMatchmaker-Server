@@ -162,6 +162,8 @@ module.exports = gql`
         getEvent(eventID: String!): Event!
         getAllEvents: [Event]!
         getEvents(getEventsInput: GetEventsInput!): [Event!]!
+        getJoinedEvents: [Event!]
+        getHostedEvents: [Event!]
         # Routes
         getRoute(routeID: String!): Route!
     }
