@@ -102,6 +102,44 @@ module.exports = {
             return events[0].data;
         },
 
+        async getJoinedEvents(_, {}, contextValue) {
+            if (!contextValue.user.username) {
+                throw new GraphQLError('You must be logged in to perform this action.', {
+                    extensions: {
+                        code: 'UNAUTHENTICATED',
+                    },
+                })
+            }
+
+            const eventIDList = await User.findOne({ username: contextValue.user.username }).select('eventsJoined');
+
+            var eventList = [];
+            for (const eventJoined of Object.values(eventIDList.eventsJoined)) {
+                const eventInfo = await Event.findOne({ _id: eventJoined });
+                if (eventInfo) eventList.push(eventInfo);
+            }
+            return eventList;
+        },
+
+        async getHostedEvents(_, {}, contextValue) {
+            if (!contextValue.user.username) {
+                throw new GraphQLError('You must be logged in to perform this action.', {
+                    extensions: {
+                        code: 'UNAUTHENTICATED',
+                    },
+                })
+            }
+
+            const eventIDList = await User.findOne({ username: contextValue.user.username }).select('eventsHosted');
+
+            var eventList = [];
+            for (const eventHosted of Object.values(eventIDList.eventsHosted)) {
+                const eventInfo = await Event.findOne({ _id: eventHosted });
+                if (eventInfo) eventList.push(eventInfo);
+            }
+            return eventList;
+        },
+
         async getRoute(_, { routeID }) {
             const route = await Route.findOne({ _id: routeID });
             return route;
