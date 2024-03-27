@@ -55,6 +55,26 @@ async function checkStravaToken(username) {
         handleGeneralError(error, "User not found.");
     }
 }
+
+async function stravaGetAthlete(APIToken) {
+    try {
+        const response = await fetch('https://www.strava.com/api/v3/athlete', {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${APIToken}`,
+                'Content-Type': 'application/json',
+            },
+        });
+
+        const athleteData = await response.json();
+        console.log(athleteData);
+        return athleteData;
+    } catch (error) {
+        console.log(error);
+        throw new Error('Failed to fetch athlete from Strava API');
+    }
+}
+
 async function refreshStravaToken(username, refreshToken) {
     try {
         const queryParams = new URLSearchParams({
@@ -401,13 +421,17 @@ module.exports = {
                 const APIToken = responseData.access_token;
                 const refreshToken = responseData.refresh_token;
                 const tokenExpiration = new Date(responseData.expires_at).toISOString();
+                const athelete = await stravaGetAthlete(APIToken);
+
                 //store user's access
                 const user = await User.findOneAndUpdate(
                     {username: contextValue.user.username},
                     {
                         stravaAPIToken: APIToken,
                         stravaRefreshToken: refreshToken,
-                        stravaTokenExpiration: tokenExpiration 
+                        stravaTokenExpiration: tokenExpiration,
+                        FTP: athelete.ftp == null ? 0 : athelete.ftp,
+                        FTPdate: new Date().toISOString(),
                     }
                 )
                 return user;
