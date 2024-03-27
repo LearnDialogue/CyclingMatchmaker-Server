@@ -47,9 +47,9 @@ module.exports = {
                     radius = geoParam.radius;
             }
             //if location string provided, find corresponding coords
-            else if (locationCoords.length === 0){
+            else if (location){
                 const fetchResult = await fetchLocation(location, null);
-                locationCoords = [fetchResult.lon, fetchResult.lat];
+                locationCoords = [parseFloat(fetchResult.lon), parseFloat(fetchResult.lat)];
             }
             if (locationCoords.length === 0) {
                 throw new GraphQLError('Location not provided nor found in user document.', {
@@ -101,6 +101,11 @@ module.exports = {
             );
             return events[0].data;
         },
+
+        async getRoute(_, { routeID }) {
+            const route = await Route.findOne({ _id: routeID });
+            return route;
+        }
     },
 
     Mutation: {
