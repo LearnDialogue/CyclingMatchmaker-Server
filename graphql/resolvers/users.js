@@ -67,10 +67,8 @@ async function stravaGetAthlete(APIToken) {
         });
 
         const athleteData = await response.json();
-        console.log(athleteData);
         return athleteData;
     } catch (error) {
-        console.log(error);
         throw new Error('Failed to fetch athlete from Strava API');
     }
 }
