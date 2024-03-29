@@ -239,10 +239,15 @@ module.exports = {
             return resEvent.events;
         },
 
-        async joinEvent(_, {
-            username,
-            eventID
-        }) {
+        async joinEvent(_, { eventID }, contextValue) {
+            if (!contextValue.user.username) {
+                throw new GraphQLError('You must be logged in to perform this action.', {
+                    extensions: {
+                        code: 'UNAUTHENTICATED',
+                    },
+                })
+            }
+            const username = contextValue.user.username;
             const resEvent = await Event.findOneAndUpdate(
                 { _id: eventID },
                 { $push: { participants: username }},
@@ -255,10 +260,15 @@ module.exports = {
             return resEvent;
         },
 
-        async leaveEvent(_, {
-            username,
-            eventID
-        }) {
+        async leaveEvent(_, { eventID }, contextValue) {
+            if (!contextValue.user.username) {
+                throw new GraphQLError('You must be logged in to perform this action.', {
+                    extensions: {
+                        code: 'UNAUTHENTICATED',
+                    },
+                })
+            }
+            const username = contextValue.user.username;
             const resEvent = await Event.findOneAndUpdate(
                 { _id: eventID },
                 { $pull: { participants: username }},
