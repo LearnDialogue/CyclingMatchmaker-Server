@@ -373,6 +373,9 @@ module.exports = {
                 }
             );
 
+            // If any of these values are changed, the user will need
+            // a new token, as these are properties of the login token
+
             var newToken;
             if (
                 user.username !== username ||
@@ -382,8 +385,6 @@ module.exports = {
                 ) {
                 newToken = generateToken(updatedUser, "24h")
             }
-            console.log(updatedUser);
-            console.log(newToken);
 
             return {
                 ...updatedUser._doc,
