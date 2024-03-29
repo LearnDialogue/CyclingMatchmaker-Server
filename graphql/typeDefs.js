@@ -49,7 +49,7 @@ module.exports = gql`
 
     ## Event Model
     type Event {
-        id: ID!
+        _id: ID!
         host: String!
         name: String!
         locationName: String!
@@ -181,7 +181,7 @@ module.exports = gql`
         # Events
         createEvent(createEventInput: CreateEventInput!): Event!
         deleteEvent(host: String!, eventID: String!): [Event]!
-        joinEvent(username: String!, eventID: String!): Event!
-        leaveEvent(username: String!, eventID: String!): Event!
+        joinEvent(eventID: String!): Event!
+        leaveEvent(eventID: String!): Event!
     }
 `
