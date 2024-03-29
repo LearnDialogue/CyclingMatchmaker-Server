@@ -12,6 +12,7 @@ const {
     validateLoginInput,
     validateUsername,
     validateEmail,
+    validateEditProfileInput,
 } = require('../../util/validators');
   
 const { fetchLocation } = require('../../util/geocoder.js');
@@ -291,6 +292,103 @@ module.exports = {
                 ...user._doc,
                 id: user._id,
                 loginToken,
+            };
+        },
+
+        async editProfile(_, {
+            editProfileInput: {
+                username,
+                email,
+                firstName,
+                lastName,
+                sex,
+                birthday,
+                weight,
+                location,
+                radius,
+                metric,
+            }
+        }, contextValue) {
+
+            if (!contextValue.user) {
+                throw new GraphQLError('You must be logged in to perform this action.', {
+                    extensions: {
+                        code: 'UNAUTHENTICATED',
+                    },
+                })
+            }
+
+            const { errors, valid } = validateEditProfileInput(
+                username,
+                email,
+                firstName,
+                lastName,
+                sex,
+                birthday,
+                weight,
+                location,
+                radius,
+                metric,
+            );
+
+            if (!valid) {
+                handleInputError(errors);
+            }
+
+            const user = await User.findOne({ _id: contextValue.user.id });
+            if (!user) handleGeneralError({}, "User not found.");
+
+            const usernameCheck = await User.findOne({ username });
+            if (usernameCheck && usernameCheck.username !== contextValue.user.username) {
+                errors.general = "An account with that username already exists.";
+                handleInputError(errors);
+            }
+    
+            const emailCheck = await User.findOne({ email });
+            if (emailCheck && emailCheck.email !== contextValue.user.email) {
+                errors.general = "An account with that e-mail already exists.";
+                handleInputError(errors);
+            }
+
+            const fetchedData = await fetchLocation(location, null);
+            locationCoords = [fetchedData.lon, fetchedData.lat];
+
+            const updatedUser = await User.findOneAndUpdate(
+                { _id: contextValue.user.id },
+                {
+                    username: username,
+                    email: email,
+                    firstName: firstName,
+                    lastName: lastName,
+                    sex: sex,
+                    birthday: birthday,
+                    weight: weight,
+                    locationName: location,
+                    locationCoords: locationCoords,
+                    radius: radius,
+                    metric: metric,
+                },
+                {
+                    new: true
+                }
+            );
+
+            var newToken;
+            if (
+                user.username !== username ||
+                user.email !== email ||
+                user.firstName !== firstName ||
+                user.lastName !== lastName
+                ) {
+                newToken = generateToken(updatedUser, "24h")
+            }
+            console.log(updatedUser);
+            console.log(newToken);
+
+            return {
+                ...updatedUser._doc,
+                id: updatedUser._id,
+                newToken,
             };
         },
 
