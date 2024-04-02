@@ -279,6 +279,90 @@ module.exports = {
                 { $pull: { eventsJoined: eventID }},
             );
             return resEvent;
-        }
+        },
+
+        async editEvent(_, {
+            editEventInput: {
+                eventID,
+                name,
+                startTime,
+                description,
+                bikeType,
+                difficulty,
+                wattsPerKilo,
+                intensity,
+                points,
+                elevation,
+                grade,
+                terrain,
+                distance,
+                maxElevation,
+                minElevation,
+                totalElevationGain,
+                startCoordinates,
+                endCoordinates,
+            }
+        }, contextValue) {
+            if (!contextValue.user.username) {
+                throw new GraphQLError('You must be logged in to perform this action.', {
+                    extensions: {
+                        code: 'UNAUTHENTICATED',
+                    },
+                })
+            }
+
+            const event = await Event.findOne({ _id: eventID });
+            if (!event) handleGeneralError({}, "Event not found.");
+
+            if (event.host !== contextValue.user.username) {
+                handleGeneralError({}, "User unauthorized to edit this event.");
+            }
+
+            const route = await Route.findOne({ _id: event.route });
+            if (!route) handleGeneralError({}, "Event not found.");
+
+            const updatedRoute = await Route.findOneAndUpdate(
+                { _id: event.route },
+                {
+                    points,
+                    elevation,
+                    grade,
+                    terrain,
+                    distance,
+                    maxElevation,
+                    minElevation,
+                    totalElevationGain,
+                    startCoordinates,
+                    endCoordinates,
+                },
+                {
+                    new: true
+                }
+            );
+            if (!updatedRoute) handleGeneralError({}, "Route not saved.");
+
+            const locFetched = await fetchLocation(null, startCoordinates);
+            const locCoords = [startCoordinates[1],startCoordinates[0]];
+
+            const updatedEvent = await Event.findOneAndUpdate(
+                { _id: eventID },
+                {
+                    name,
+                    startTime,
+                    description,
+                    bikeType,
+                    difficulty,
+                    wattsPerKilo,
+                    intensity,
+                    locationName: locFetched.display_name,
+                    locationCoords: locCoords,
+                },
+                {
+                    new: true
+                }
+            );
+            
+            return updatedEvent;
+        },
     },
 };

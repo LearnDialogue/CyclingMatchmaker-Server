@@ -164,6 +164,30 @@ module.exports = gql`
         radius: Int!
     }
 
+    input EditEventInput {
+        # Event Input
+        eventID: String!
+        name: String!
+        startTime: Date!
+        description: String
+        bikeType: String!
+        difficulty: String!
+        wattsPerKilo: Float!
+        intensity: String!
+
+        # Route Input
+        points: [[Float]]!
+        elevation: [Float]!
+        grade: [Float]!
+        terrain: [String]!
+        distance: Float!
+        maxElevation: Float!
+        minElevation: Float!
+        totalElevationGain: Float!
+        startCoordinates: [Float]!
+        endCoordinates: [Float]!
+    }
+
     ## QUERY LIST
     type Query {
         # Users
@@ -197,5 +221,6 @@ module.exports = gql`
         deleteEvent(host: String!, eventID: String!): [Event]!
         joinEvent(eventID: String!): Event!
         leaveEvent(eventID: String!): Event!
+        editEvent(editEventInput: EditEventInput!): Event!
     }
 `
