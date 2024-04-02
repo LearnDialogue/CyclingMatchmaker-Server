@@ -151,6 +151,19 @@ module.exports = gql`
         match: [String]
     }
 
+    input EditProfileInput {
+        username: String!
+        email: String!
+        firstName: String!
+        lastName: String!
+        sex: String!
+        birthday: String!
+        weight: Int!
+        metric: Boolean!
+        location: String!
+        radius: Int!
+    }
+
     ## QUERY LIST
     type Query {
         # Users
@@ -178,6 +191,7 @@ module.exports = gql`
         removeGear(username: String!, gearID: String!): [Gear]!
         setRegion(setRegionInput: SetRegionInput!): User!
         exchangeStravaAuthorizationCode(code: String!, scope: String!): User!
+        editProfile(editProfileInput: EditProfileInput!): User!
         # Events
         createEvent(createEventInput: CreateEventInput!): Event!
         deleteEvent(host: String!, eventID: String!): [Event]!
