@@ -8,6 +8,8 @@ module.exports.validateRegisterInput = (
     sex,
     birthday,
     weight,
+    experience,
+    FTP,
     metric,
   ) => {
     const errors = {};
@@ -78,6 +80,15 @@ module.exports.validateRegisterInput = (
         errors.weight = "Weight is required.";
     } else if (!weight.match(weightValidator)) {
         errors.weight = "Weight must be an integer value.";
+    }
+
+    if (experience.trim() === "") {
+        errors.experience = "Experience is required.";
+    }
+
+    FTP = FTP.toString();
+    if (FTP.trim() === "") {
+      errors.FTP = "FTP is required.";
     }
 
     metric = metric.toString();
@@ -156,6 +167,8 @@ module.exports.validateRegisterInput = (
     sex,
     birthday,
     weight,
+    experience,
+    FTP,
     location,
     radius,
     metric,
@@ -218,6 +231,15 @@ module.exports.validateRegisterInput = (
         errors.weight = "Weight is required.";
     } else if (!weight.match(weightValidator)) {
         errors.weight = "Weight must be an integer value.";
+    }
+
+    if (experience.trim() === "") {
+      errors.experience = "Experience is required.";
+    }
+
+    FTP = FTP.toString();
+    if (FTP.trim() === "") {
+      errors.FTP = "FTP is required.";
     }
 
     metric = metric.toString();

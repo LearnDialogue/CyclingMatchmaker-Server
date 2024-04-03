@@ -189,6 +189,8 @@ module.exports = {
                 sex,
                 birthday,
                 weight,
+                experience,
+                FTP,
                 metric,
             },
         }) {
@@ -207,6 +209,8 @@ module.exports = {
                 sex,
                 birthday,
                 weight,
+                experience,
+                FTP,
                 metric,
             )
 
@@ -237,6 +241,9 @@ module.exports = {
                 sex: sex,
                 birthday: birthday,
                 weight: weight,
+                experience: experience,
+                FTP: FTP,
+                FTPdate: new Date().toISOString(),
                 metric: metric,
                 createdAt: new Date().toISOString(),
                 lastLogin: new Date().toISOString(),
@@ -304,6 +311,8 @@ module.exports = {
                 sex,
                 birthday,
                 weight,
+                experience,
+                FTP,
                 location,
                 radius,
                 metric,
@@ -326,6 +335,8 @@ module.exports = {
                 sex,
                 birthday,
                 weight,
+                experience,
+                FTP,
                 location,
                 radius,
                 metric,
@@ -353,6 +364,8 @@ module.exports = {
             const fetchedData = await fetchLocation(location, null);
             locationCoords = [fetchedData.lon, fetchedData.lat];
 
+            const newFTPdate = FTP === user.FTP ? user.FTPdate : new Date().toISOString();
+
             const updatedUser = await User.findOneAndUpdate(
                 { _id: contextValue.user.id },
                 {
@@ -363,6 +376,9 @@ module.exports = {
                     sex: sex,
                     birthday: birthday,
                     weight: weight,
+                    experience: experience,
+                    FTP: FTP,
+                    FTPdate: newFTPdate,
                     locationName: location,
                     locationCoords: locationCoords,
                     radius: radius,
@@ -518,7 +534,6 @@ module.exports = {
                 const APIToken = responseData.access_token;
                 const refreshToken = responseData.refresh_token;
                 const tokenExpiration = new Date(responseData.expires_at).toISOString();
-                const athelete = await stravaGetAthlete(APIToken);
 
                 //store user's access
                 const user = await User.findOneAndUpdate(
@@ -527,8 +542,6 @@ module.exports = {
                         stravaAPIToken: APIToken,
                         stravaRefreshToken: refreshToken,
                         stravaTokenExpiration: tokenExpiration,
-                        FTP: athelete.ftp == null ? 0 : athelete.ftp,
-                        FTPdate: new Date().toISOString(),
                     }
                 )
                 return user;
