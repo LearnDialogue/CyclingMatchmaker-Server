@@ -57,7 +57,7 @@ module.exports = gql`
         locationCoords: [Float]!
         startTime: Date!
         description: String
-        bikeType: String!
+        bikeType: [String!]
         difficulty: String!
         wattsPerKilo: Float!
         intensity: String!
@@ -117,7 +117,7 @@ module.exports = gql`
         name: String!
         startTime: Date!
         description: String
-        bikeType: String!
+        bikeType: [String!]
         difficulty: String!
         wattsPerKilo: Float!
         intensity: String!
@@ -175,7 +175,7 @@ module.exports = gql`
         name: String!
         startTime: Date!
         description: String
-        bikeType: String!
+        bikeType: [String!]
         difficulty: String!
         wattsPerKilo: Float!
         intensity: String!
