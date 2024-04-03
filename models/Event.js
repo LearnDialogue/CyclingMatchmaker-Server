@@ -23,7 +23,7 @@ const eventSchema = new Schema({
         type: String,
     },
     bikeType: {
-        type: String,
+        type: [String],
         required: true,
     },
     difficulty: {
