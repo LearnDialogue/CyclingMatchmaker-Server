@@ -78,8 +78,14 @@ const userSchema = new Schema({
         required: true,
         default: true,
     },
+    experience: {
+        type: String,
+        required: true,
+        default: '',
+    },
     FTP: {
         type: Number,
+        required: true,
         default: 0,
     },
     FTPdate: {
