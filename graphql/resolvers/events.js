@@ -226,17 +226,33 @@ module.exports = {
         },
 
         async deleteEvent(_, {
-            host,
             eventID
-        }) {
+        }, contextValue) {
+            if (!contextValue.user.username) {
+                throw new GraphQLError('You must be logged in to perform this action.', {
+                    extensions: {
+                        code: 'UNAUTHENTICATED',
+                    },
+                })
+            }
+
+            const event = await Event.findOne({ _id: eventID });
+            const participants = event.participants;
+            for (const participant of participants) {
+                await User.findOneAndUpdate(
+                    { username: participant },
+                    { $pull: { eventsJoined: eventID }},
+                )
+            }
+
             const resEvent = await User.findOneAndUpdate(
-                { username: host },
+                { username: contextValue.user.username },
                 { $pull: { eventsHosted: eventID }},
                 { returnDocument: 'after'},
             );
             const delEvent = await Event.findOneAndDelete({ _id: eventID });
             await Route.deleteOne({ _id: delEvent.route });
-            return resEvent.events;
+            return resEvent;
         },
 
         async joinEvent(_, { eventID }, contextValue) {

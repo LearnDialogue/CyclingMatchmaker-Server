@@ -223,7 +223,7 @@ module.exports = gql`
         editProfile(editProfileInput: EditProfileInput!): User!
         # Events
         createEvent(createEventInput: CreateEventInput!): Event!
-        deleteEvent(host: String!, eventID: String!): [Event]!
+        deleteEvent(eventID: String!): User!
         joinEvent(eventID: String!): Event!
         leaveEvent(eventID: String!): Event!
         editEvent(editEventInput: EditEventInput!): Event!
