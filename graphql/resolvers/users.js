@@ -1,4 +1,6 @@
 const GraphQLError = require('graphql').GraphQLError;
+const Event = require("../../models/Event.js");
+const Route = require("../../models/Route.js");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
@@ -410,6 +412,52 @@ module.exports = {
                 id: updatedUser._id,
                 loginToken,
             };
+        },
+
+        async deleteUser(_, {}, contextValue) {
+            if (!contextValue.user) {
+                throw new GraphQLError('You must be logged in to perform this action.', {
+                    extensions: {
+                        code: 'UNAUTHENTICATED',
+                    },
+                })
+            }
+
+            const user = await User.findOne({ _id: contextValue.user.id });
+            if (!user) {
+                throw new GraphQLError('User not found.', {
+                    extensions: {
+                        code: 'USER_NOT_FOUND'
+                    }
+                })
+            }
+
+            // Leave all joined events
+            for (const eventID of Object.values(user.eventsJoined)) {
+                const fetchedEvent = await Event.findOneAndUpdate(
+                    { _id: eventID },
+                    { $pull: { participants: user.username }},
+                );
+            }
+
+            // Delete all hosted events
+            for (const eventID of Object.values(user.eventsHosted)) {
+                const fetchedEvent = await Event.findOne({ _id: eventID });
+                const participants = fetchedEvent.participants;
+                for (const participant of participants) {
+                    await User.findOneAndUpdate(
+                        { username: participant },
+                        { $pull: { eventsJoined: eventID }},
+                    )
+                }
+                const delEvent = await Event.findOneAndDelete({ _id: eventID });
+                const delRoute = await Route.deleteOne({ _id: delEvent.route });
+            }
+
+            // Delete user record
+            await User.deleteOne({ _id: user._id });
+
+            return user;
         },
 
         /*
