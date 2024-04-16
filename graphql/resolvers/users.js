@@ -230,6 +230,8 @@ module.exports = {
                 handleInputError(errors);
             }
 
+            FTP = FTP === 0 ? 2 * weight : FTP;
+
             password = await bcrypt.hash(password, 12);
 
             const newUser = new User({
@@ -363,7 +365,8 @@ module.exports = {
 
             const fetchedData = await fetchLocation(location, null);
             locationCoords = [fetchedData.lon, fetchedData.lat];
-
+            
+            FTP = FTP === 0 ? 2 * weight : FTP;
             const newFTPdate = FTP === user.FTP ? user.FTPdate : new Date().toISOString();
 
             const updatedUser = await User.findOneAndUpdate(
