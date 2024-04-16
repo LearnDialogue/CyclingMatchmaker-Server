@@ -3,6 +3,7 @@ const User = require("../../models/User.js");
 const Event = require("../../models/Event.js");
 const Route = require("../../models/Route.js");
 const { fetchLocation } = require('../../util/geocoder.js');
+const { generateEventMatches } = require('../../util/matchmaking/match-gen.js');
 
 
 module.exports = {
@@ -107,7 +108,7 @@ module.exports = {
                     }
                 ]
             );
-            return events[0].data;
+            return generateEventMatches(contextValue.user.id, events[0].data);
         },
 
         async getJoinedEvents(_, {}, contextValue) {

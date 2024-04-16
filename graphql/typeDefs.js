@@ -63,6 +63,7 @@ module.exports = gql`
         intensity: String!
         route: String!
         participants: [String]
+        match: Int
     }
 
     ## Event/Route Aux Model
