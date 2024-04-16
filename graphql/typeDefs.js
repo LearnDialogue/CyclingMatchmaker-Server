@@ -222,6 +222,7 @@ module.exports = gql`
         setRegion(setRegionInput: SetRegionInput!): User!
         exchangeStravaAuthorizationCode(code: String!, scope: String!): User!
         editProfile(editProfileInput: EditProfileInput!): User!
+        deleteUser: User!
         # Events
         createEvent(createEventInput: CreateEventInput!): Event!
         deleteEvent(eventID: String!): User!
