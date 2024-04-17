@@ -352,9 +352,7 @@ module.exports = {
                     startCoordinates,
                     endCoordinates,
                 },
-                {
-                    new: true
-                }
+                { returnDocument: 'after'}
             );
             if (!updatedRoute) handleGeneralError({}, "Route not saved.");
 
@@ -374,9 +372,7 @@ module.exports = {
                     locationName: locFetched.display_name,
                     locationCoords: locCoords,
                 },
-                {
-                    new: true
-                }
+                { returnDocument: 'after'}
             );
             
             return updatedEvent;
