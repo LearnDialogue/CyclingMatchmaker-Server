@@ -565,6 +565,9 @@ module.exports = {
         );
       }
 
+      console.log('Scope: ', scope);
+      console.log('Code: ', code);
+
       const scopeArray = scope.split(',');
       if (
         !scopeArray.includes('activity:read_all') ||
