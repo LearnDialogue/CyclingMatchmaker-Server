@@ -565,9 +565,6 @@ module.exports = {
         );
       }
 
-      console.log('Scope: ', scope);
-      console.log('Code: ', code);
-
       const scopeArray = scope.split(',');
       if (
         !scopeArray.includes('activity:read_all') ||
@@ -602,11 +599,9 @@ module.exports = {
         const responseData = await response.json();
         const APIToken = responseData.access_token;
         const refreshToken = responseData.refresh_token;
-        console.log(responseData);
         const tokenExpiration = new Date(
           responseData.expires_at * 1000
         ).toISOString();
-        console.log('Token expiration: ', tokenExpiration);
 
         //store user's access
         const user = await User.findOneAndUpdate(
