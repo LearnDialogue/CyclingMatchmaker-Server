@@ -42,6 +42,12 @@ const eventSchema = new Schema({
         type: String,
         required: true,
     },
+    women_only: {
+        type: Boolean,
+    },
+    nonbinary_only: {
+        type: Boolean,
+    },
     participants: [String],
 });
 

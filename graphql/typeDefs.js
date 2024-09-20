@@ -61,6 +61,8 @@ module.exports = gql`
     wattsPerKilo: Float!
     intensity: String!
     route: String!
+    women_only: Boolean
+    nonbinary_only: Boolean
     participants: [String]
     match: Int
   }
