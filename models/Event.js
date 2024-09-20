@@ -43,6 +43,14 @@ const eventSchema = new Schema({
         required: true,
     },
     participants: [String],
+    womenOnly: {
+        type: Boolean,
+        default: false,
+    },
+    allowNonBinary: {
+        type: Boolean,
+        default: false,
+    }
 });
 
 module.exports = model('Event', eventSchema);

@@ -176,6 +176,8 @@ module.exports = {
                 totalElevationGain,
                 startCoordinates,
                 endCoordinates,
+                womenOnly,
+                allowNonBinary
             },
         }, contextValue) {
             if (!contextValue.user.username) {
@@ -216,6 +218,8 @@ module.exports = {
                 wattsPerKilo: wattsPerKilo,
                 intensity: intensity,
                 route: resRoute.id,
+                womenOnly: womenOnly,
+                allowNonBinary: allowNonBinary
             });
             const resEvent = await newEvent.save();
 

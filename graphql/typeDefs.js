@@ -122,6 +122,8 @@ module.exports = gql`
     difficulty: String!
     wattsPerKilo: Float!
     intensity: String!
+    womenOnly: Boolean
+    allowNonBinary: Boolean
 
     # Route Input
     points: [[Float]]!
