@@ -43,11 +43,11 @@ const eventSchema = new Schema({
         required: true,
     },
     participants: [String],
-    womenOnly: {
+    privateWomen: {
         type: Boolean,
         default: false,
     },
-    allowNonBinary: {
+    privateNonBinary: {
         type: Boolean,
         default: false,
     }
