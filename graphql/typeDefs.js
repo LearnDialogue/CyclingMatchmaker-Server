@@ -63,6 +63,8 @@ module.exports = gql`
     route: String!
     participants: [String]
     match: Int
+    privateWomen: Boolean
+    privateNonBinary: Boolean
   }
 
   ## Event/Route Aux Model
