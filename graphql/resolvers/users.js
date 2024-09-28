@@ -616,11 +616,10 @@ module.exports = {
       } catch (err) {
         throw new GraphQLError(err, {
           extensions: {
-            code: 'Internal Server Error',
+            code: 'INTERNAL_SERVER_ERROR',
           },
-        });
+        });        
       }
-      return null;
     },
   },
 };
