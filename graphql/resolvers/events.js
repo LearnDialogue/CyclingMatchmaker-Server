@@ -39,6 +39,9 @@ module.exports = {
                     },
                 })
             }
+
+            const user = await User.findOne({ username: contextValue.user.username }).select('sex locationCoords radius');
+
             //check if location and/or radius is null
             let locationCoords = null;
             if(!location | !radius) {
@@ -60,54 +63,63 @@ module.exports = {
                     }
                 });
             }
-            if(!page)
-                page = 0;
-            if(!pageSize)
-                pageSize = 50;
-            if(!bikeType) {
-                bikeType = [];
-            }
-            if(!wkg) {
-                wkg = [];
+
+            page = page || 0;
+            pageSize = pageSize || 50;
+            bikeType = bikeType || [];
+            wkg = wkg || [];
+
+            // filter gender restrictions
+            const userGender = user.sex;
+            let genderFilter = {};
+
+            if (userGender === 'gender-man' || userGender === 'gender-prefer-not-to-say') {
+                genderFilter = {
+                    $and: [
+                        { privateNonBinary: false },
+                        { privateWomen: false }
+                    ]
+                };
+            } else if (userGender === 'gender-woman') {
+                genderFilter = {
+                    $or: [
+                        { privateWomen: true },
+                        { $and: [{privateWomen: false}, { privateNonBinary: false }] }
+                    ]
+                };
+            } else if (userGender === 'gender-non-binary') {
+                genderFilter = {
+                    $or: [
+                        { privateNonBinary: true },
+                        { $and: [{ privateNonBinary: false }, { privateWomen: false } ] },
+                    ]
+                };
             }
 
-            const events = await Event.aggregate(
-                [   
-                    {
-                        $match: {
-                            locationCoords: {
-                                $geoWithin: {
-                                    $centerSphere: [
-                                        locationCoords,
-                                        radius / 6378.1]
-                                }
+            const events = await Event.aggregate([
+                {
+                    $match: {
+                        ...genderFilter, // apply gender filter
+                        locationCoords: {
+                            $geoWithin: {
+                                $centerSphere: [locationCoords, radius / 6378.1],
                             },
-                            startTime: endDate ?
-                            {
-                                $gte: startDate,
-                                $lte: endDate,
-                            } : 
-                            {
-                                $gte: startDate
-                            },
-                            bikeType: bikeType.length ?
-                            {
-                                $in: bikeType
-                            } : {$nin: []},
-                            difficulty: wkg.length ?
-                            {
-                                $in: wkg
-                            } : {$nin: []},
-                        }
+                        },
+                        startTime: endDate
+                            ? { $gte: startDate, $lte: endDate }
+                            : { $gte: startDate },
+                        bikeType: bikeType.length ? { $in: bikeType } : { $nin: [] },
+                        difficulty: wkg.length ? { $in: wkg } : { $nin: [] },
                     },
-                    {
-                        $facet: {
-                            metadata: [{ $count: 'totalCount' }],
-                            data: [{ $skip: (page) * pageSize }, { $limit: pageSize }],
-                        }
-                    }
-                ]
-            );
+                },
+                {
+                    $facet: {
+                        metadata: [{ $count: 'totalCount' }],
+                        data: [{ $skip: page * pageSize }, { $limit: pageSize }],
+                    },
+                },
+            ]);
+
             return generateEventMatches(contextValue.user.id, events[0].data);
         },
 

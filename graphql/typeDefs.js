@@ -157,6 +157,7 @@ module.exports = gql`
     location: String
     radius: Int
     match: [String]
+    userSex: Boolean
   }
 
   input EditProfileInput {
