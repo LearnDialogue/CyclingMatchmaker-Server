@@ -91,7 +91,8 @@ module.exports = {
                 genderFilter = {
                     $or: [
                         { privateNonBinary: true },
-                        { $and: [{ privateNonBinary: false }, { privateWomen: true } ] }
+                        { $and: [{ privateNonBinary: false }, { privateWomen: true } ] },
+                        { $and: [{ privateNonBinary: false }, { privateWomen: false } ] },
                     ]
                 };
             }
