@@ -428,6 +428,8 @@ module.exports = {
       };
     },
 
+    
+
     async deleteUser(_, {}, contextValue) {
       if (!contextValue.user) {
         throw new GraphQLError(
@@ -475,6 +477,32 @@ module.exports = {
       await User.deleteOne({ _id: user._id });
 
       return user;
+    },
+
+    async updateProfileImage(_, { updateProfileImageInput: { username, hasProfileImage }}) {
+      try {
+        const user = await User.findOneAndUpdate(
+          { username },
+          { hasProfileImage },
+          { new: true } // Ensure the updated document is returned      
+        );
+
+        if (!user) {
+          throw new GraphQLError('User not found.', {
+            extensions: {
+              code: 'USER_NOT_FOUND',
+            },
+          });
+        }
+        return user;
+      }
+      catch (error) {
+        throw new GraphQLError(error, {
+          extensions: {
+            code: 'Internal Server Error',
+          },
+        });
+      }
     },
 
     /*

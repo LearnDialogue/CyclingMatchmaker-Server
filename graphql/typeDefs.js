@@ -34,6 +34,7 @@ module.exports = gql`
     lastLogin: String!
     emailAuthenticated: String
     permission: String!
+    hasProfileImage: Boolean
   }
 
   ## User/Gear Aux Model
@@ -102,6 +103,11 @@ module.exports = gql`
     username: String!
     password: String!
     remember: String!
+  }
+
+  input UpdateProfileImageInput {
+    username: String!
+    hasProfileImage: Boolean!
   }
 
   input AddGearInput {
@@ -222,6 +228,7 @@ module.exports = gql`
     # Users
     register(registerInput: RegisterInput!): User!
     login(loginInput: LoginInput!): User!
+    updateProfileImage(updateProfileImageInput: UpdateProfileImageInput!): User!
     addGear(addGearInput: AddGearInput!): [Gear]!
     removeGear(username: String!, gearID: String!): [Gear]!
     setRegion(setRegionInput: SetRegionInput!): User!
